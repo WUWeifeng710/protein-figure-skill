@@ -1,16 +1,16 @@
 meta:
   name: spectrum_resi
-  title: 序列位置 B-factor / pLDDT 谱着色（蓝白红渐变 cartoon）
-  scene: cartoon 按残基位置做连续渐变（blue_white_red 默认），CA 原子加小球提升可读性，白底柔光。适合展示序列沿结构的属性分布（B-factor 柔性 / AlphaFold pLDDT 置信度）。
-  reference: "参考 PyMolClaw spectrum.py，改写到 2.5.0 严格 API"
+  title: Sequence-position B-factor / pLDDT spectrum coloring (blue-white-red gradient cartoon)
+  scene: cartoon continuous gradient by residue position (blue_white_red by default), CA atoms as spheres to improve readability, white bg soft light. Suitable for showing property distribution along the structure (B-factor flexibility / AlphaFold pLDDT confidence).
+  reference: "Adapted from PyMolClaw spectrum.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
-  # 渐变方向：按残基位置（resi）做蓝→白→红；可按需改 property（bfactor / plddt 需带该列）
+  # Gradient direction: blue→white→red by residue position (resi); change property as needed (bfactor / plddt require that column present)
   property: resi
-  palette: blue_white_red        # 可选：blue_green_red / rainbow / red_white_blue
+  palette: blue_white_red        # options: blue_green_red / rainbow / red_white_blue
   add_ca_spheres: true
   ca_sphere_scale: 0.5
   hide_water: true
@@ -34,18 +34,18 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 spectrum_resi.py 参考实现）：
-    1. cmd.load；加载校验 count_atoms("all")>0（命中 0 即报错退出）
-    2. 白底柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/...）
-    3. remove resn HOH；hide everything, hetatm；hide everything
-    4. show cartoon, m；spectrum {property} {palette} m   ← 核心命令
-    5. show spheres, "m and name CA"；set sphere_scale 0.5
-    6. orient m；ray；png dpi=300
+    No molpub class, direct cmd (see spectrum_resi.py reference implementation):
+    1. cmd.load; load validation count_atoms("all")>0 (error out on 0 matches)
+    2. white bg soft light param set (bg_color + set ambient/two_sided_lighting/ray_shadows/...)
+    3. remove resn HOH; hide everything, hetatm; hide everything
+    4. show cartoon, m; spectrum {property} {palette} m   ← core command
+    5. show spheres, "m and name CA"; set sphere_scale 0.5
+    6. orient m; ray; png dpi=300
     7. mol.stop()
   entry_class: null
   extra_steps: |
-    - **关键坑**：conda-forge 2.5.0 的 `spectrum` 命令不认 `bfactor` 当属性槽（报 "Unknown expression: bfactor"）。
-      2.5.0 能跑通的是 `spectrum resi ...`（按残基位置）或 `spectrum plddt`（PDB 带该列时）。
-      想要"真按 B-factor"连续渐变，需 `spectrum b ...` 的 B-factor 槽——本机 2.5.0 实测 `bfactor` 槽名不认，用 `resi` 替代（沿序列渐变，视觉等价）。
-    - 若 PDB 带 AlphaFold 的 pLDDT 列（MODEL 段），`property: plddt` 可作真置信度着色。
-    - 与 nature_highlight 的区别：本模板是"属性连续渐变"，不是"高亮区段 + 配色"。
+    - **Key pitfall**: conda-forge 2.5.0's `spectrum` command does not recognize `bfactor` as a property slot (reports "Unknown expression: bfactor").
+      What works in 2.5.0 is `spectrum resi ...` (by residue position) or `spectrum plddt` (when the PDB has that column).
+      For a "true B-factor" continuous gradient you need the `spectrum b ...` B-factor slot -- in this machine's 2.5.0 the `bfactor` slot name is not recognized, so use `resi` instead (sequence-wise gradient, visually equivalent).
+    - If the PDB has an AlphaFold pLDDT column (MODEL section), `property: plddt` can be used for true confidence coloring.
+    - Difference from nature_highlight: this template is "continuous property gradient", not "highlighted region + color scheme".

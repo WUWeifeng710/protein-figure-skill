@@ -1,20 +1,20 @@
 meta:
   name: goodsell_style
-  title: Goodsell 风格平面化粉彩球（按链分色，无阴影柔光）
-  scene: 球状模型按链上 Goodsell 粉彩（gs_blue/gs_red/gs_green/gs_tan/gs_orange），白底、无阴影、高 ambient、低 reflect 的"平面化"渲染，适合期刊封面级科学插图。
-  reference: "参考 PyMolClaw goodsell.py，改写到 2.5.0 严格 API"
+  title: Goodsell-style flat pastel spheres (chain-colored, no-shadow soft light)
+  scene: A spherical model chain-colored with Goodsell pastels (gs_blue/gs_red/gs_green/gs_tan/gs_orange), white background, no-shadow, high ambient, low reflect "flattened" rendering. Suitable for journal-cover-grade scientific illustration.
+  reference: "Adapted from PyMolClaw goodsell.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
-  # 按链分色（自定义粉彩，可增删链）
+  # Per-chain color (custom pastels; chains can be added/removed)
   chain_colors:
     A: "gs_blue"
     B: "gs_red"
     C: "gs_green"
     D: "gs_tan"
-  # Goodsell 粉彩调色板（Goodsell 风格典型色值）
+  # Goodsell pastel palette (typical Goodsell-style color values)
   custom_colors:
     gs_blue:   [0.565, 0.714, 0.812]
     gs_red:    [0.855, 0.475, 0.427]
@@ -25,7 +25,7 @@ params:
   hide_water: true
   hide_hetatm: true
   background: white
-  # Goodsell 平面化渲染参数（与柔光柔化系不同，是 flat / no-shadow）
+  # Goodsell flat rendering params (differs from the soft-light family; this is flat / no-shadow)
   ray_trace_mode: 3
   ray_trace_color: black
   ray_trace_gain: 0
@@ -41,17 +41,17 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 goodsell_style.py 参考实现）：
-    1. cmd.load；加载校验 count_atoms("all")>0
-    2. 白底 + Goodsell 平面化渲染参数一组（ray_trace_mode=3 / ambient=1.0 / direct=0 / reflect=0 / ray_shadows=0）
-    3. set_color 5 色 Goodsell 粉彩（gs_blue/gs_red/gs_green/gs_tan/gs_orange）
-    4. remove resn HOH；hide everything, hetatm；hide everything
-    5. show spheres, m（或 surface）；按链 color gs_*
-    6. orient m；ray；png dpi=300
+    No molpub class, direct cmd (see goodsell_style.py reference implementation):
+    1. cmd.load; load validation count_atoms("all")>0
+    2. white background + Goodsell flat rendering param set (ray_trace_mode=3 / ambient=1.0 / direct=0 / reflect=0 / ray_shadows=0)
+    3. set_color 5 Goodsell pastels (gs_blue/gs_red/gs_green/gs_tan/gs_orange)
+    4. remove resn HOH; hide everything, hetatm; hide everything
+    5. show spheres, m (or surface); per-chain color gs_*
+    6. orient m; ray; png dpi=300
     7. mol.stop()
   entry_class: null
   extra_steps: |
-    - Goodsell 风格核心：flat / no-shadow / 高 ambient（1.0）/ 零 reflect，区别于我们的"柔光柔化"系（ambient 0.5 + 影子）。
-    - 自定义色 gs_* 必须在同一 PyMOL 实例内 set_color 定义后再用（跨实例会 "Unknown color"，已踩坑）。
-    - 按链分色时 chain_colors 只写目标 PDB 实际存在的链（1AY7 只有 A/B）。
-    - 想要"封面级"可再叠 `cmd.set("ray_opaque_background", 1)` 保白底。
+    - Goodsell-style core: flat / no-shadow / high ambient (1.0) / zero reflect, distinct from our "soft-light" family (ambient 0.5 + shadows).
+    - Custom colors gs_* must be defined with set_color within the same PyMOL instance before use (across instances they become "Unknown color", already hit).
+    - When coloring per chain, chain_colors should only list chains that actually exist in the target PDB (1AY7 has only A/B).
+    - For a "cover-grade" look, additionally layer `cmd.set("ray_opaque_background", 1)` to keep the white background.

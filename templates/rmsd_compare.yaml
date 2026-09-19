@@ -1,10 +1,10 @@
 meta:
   name: rmsd_compare
-  title: 双结构 RMSD / 残基属性对比图
-  scene: 两个模型（expected vs predicted 或 wild-type vs mutant）叠合对齐，用 rainbow 渐变 + putty cartoon 粗细表达残基差异，适合结构对比 / RMSD 谱图。
-  reference: "PyMOL-PUB cases（PropertyStructureImage RMSD 示例）"
+  title: Dual-structure RMSD / residue property comparison figure
+  scene: Two models (expected vs predicted, or wild-type vs mutant) overlaid and aligned; a rainbow gradient + putty-cartoon thickness encodes the per-residue differences; ideal for structure comparison / RMSD spectra.
+  reference: "PyMOL-PUB cases (PropertyStructureImage RMSD example)"
   created: 2026-09-18
-  created_by: 我自建
+  created_by: agent-authored
 
 params:
   manuscript_format: Science
@@ -21,8 +21,8 @@ params:
   color_map: rainbow
   initial_color: "0xAAAAAA"
   edge_color: "0x000000"
-  gauge_strengthen: true   # putty cartoon，残基属性差异越大 cartoon 越粗
-  properties: null         # 可选：逐原子属性值列表（与选区原子一一对应）；null 则用内置 count
+  gauge_strengthen: true   # putty cartoon; larger residue-property difference = thicker cartoon
+  properties: null         # optional: list of per-atom property values (one-to-one with the selected atoms); null = use the built-in count
   save_width: 1800
   save_ratio: 0.5
   dpi: 300
@@ -38,5 +38,5 @@ render:
     6. close()
   entry_class: PropertyStructureImage
   extra_steps: |
-    - properties=null 时走内置 count 谱（按残基计数）；提供逐原子值时一一对应（长度必须 == 选区原子数）。
-    - gauge_strengthen 只对 cartoon 生效，surface/stick 无效果。
+    - properties=null uses the built-in count spectrum (per-residue count); when per-atom values are provided, they must be one-to-one (length == number of selected atoms).
+    - gauge_strengthen only takes effect on the cartoon representation; no effect on surface/stick.

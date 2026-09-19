@@ -1,20 +1,20 @@
 meta:
   name: residues_only
-  title: 关键残基棒特写（完全隐藏蛋白，只显指定残基 sticks）
-  scene: 整条蛋白完全隐藏，只对若干关键残基（催化位点/突变位点/结合位点）显示柔和粉彩 sticks，白底柔光。适合突出局部关键残基，让观者视线聚焦。
-  reference: "用户 .pml 配方沉淀（隐藏蛋白只显关键残基棒，原始 recipe_5_residues_only.pml 不在本技能内分发）"
+  title: Key-residue stick close-up (protein completely hidden, only specified residue sticks shown)
+  scene: The entire protein is completely hidden; only a few key residues (catalytic site / mutation site / binding site) are shown as soft pastel sticks, white bg soft light. Ideal for highlighting local key residues and focusing the viewer's eye.
+  reference: "User-sedimented .pml recipe (protein hidden, only key-residue sticks; the original recipe_5_residues_only.pml is not distributed within this skill)"
   created: 2026-09-18
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
-  # 关键残基列表：每项 = [选区字符串, 颜色名]。选区支持 resi 35 / A/35 / chain A+resi 12 等，可带链前缀。
+  # Key-residue list: each item = [selection string, colour name]. Selections support resi 35 / A/35 / chain A+resi 12 etc., may carry chain prefixes.
   key_residues:
     - [ "resi 35", "sh_pink" ]
     - [ "resi 52", "sh_blue" ]
     - [ "resi 62", "sh_lav" ]
     - [ "resi 63", "sh_cream" ]
-  # 柔和粉彩调色板（可调值 / 增删颜色名，key_residues 引用这里的颜色名）
+  # Soft pastel palette (values adjustable / colour names addable/removable; key_residues reference the colour names here)
   custom_colors:
     sh_pink:  [0.91, 0.73, 0.76]
     sh_blue:  [0.67, 0.75, 0.86]
@@ -22,7 +22,7 @@ params:
     sh_cream: [0.98, 0.93, 0.80]
   hide_water: true
   hide_hetatm: true
-  hide_protein: true          # 关键：整条蛋白卡通都藏掉，只留残基棒
+  hide_protein: true          # key: hide the entire protein cartoon, keep only residue sticks
   stick_radius: 0.24
   stick_ball: 1
   stick_ball_ratio: 1.6
@@ -35,7 +35,7 @@ params:
   depth_cue: 0
   ray_trace_gain: 0.1
   orthoscopic: 1
-  # 构图对准关键残基（配方用 zoom ... 4 拉近）
+  # composition aligned to key residues (recipe uses zoom ... 4 to bring closer)
   focus_zoom_level: 4
   save_width: 1600
   save_ratio: 1.0
@@ -43,18 +43,18 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 residues_only.py 参考实现）：
-    1. cmd.load 对象 m；set_color 4 色柔和粉彩
-    2. 白底 + 柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/...）
-    3. 棒状参数：set stick_radius / stick_ball / stick_ball_ratio
-    4. 清场：remove resn HOH；hide everything, hetatm；hide everything
-       （整条蛋白卡通随之隐藏——本配方"只显残基棒"的要点）
-    5. 对每个关键残基 select ki；把 ki 合并成选区串 show sticks；逐个 color
-    6. orient + zoom(关键残基串, level)；ray；png dpi=300
+    No molpub class, direct cmd (see residues_only.py reference implementation):
+    1. cmd.load object m; set_color 4 soft pastel colours
+    2. White bg + soft-light parameter group (bg_color + set ambient/two_sided_lighting/ray_shadows/...)
+    3. Stick parameters: set stick_radius / stick_ball / stick_ball_ratio
+    4. Clear stage: remove resn HOH; hide everything, hetatm; hide everything
+       (the entire protein cartoon is hidden accordingly — the key point of this recipe's "sticks-only" design)
+    5. For each key residue, select ki; merge the ki selections into a string, show sticks; colour each one
+    6. orient + zoom(key-residue string, level); ray; png dpi=300
     7. mol.stop()
   entry_class: null
   extra_steps: |
-    - 本配方是"只显残基棒"族，与 ss/pastel 的"cartoon + 壳"族不同：蛋白体完全不显示。
-    - key_residues 选区可按需增删/换色；带链前缀写法 `A/35` 或 `chain A and resi 35`。
-    - 关键残基若离得远，orient+zoom 对准最近一簇；想居中可把 focus_zoom_level 调小（更近）/ 去掉 zoom。
-    - 配色与 ss 族共用粉彩但偏"柔和单残基"（sh_* 前缀），避免与 ss 的 soft_blue/rose_pink 混淆。
+    - This recipe belongs to the "sticks-only" family, distinct from the ss/pastel "cartoon + shell" family: the protein body is completely hidden.
+    - key_residues selections can be added/removed/recoloured as needed; chain-prefixed syntax `A/35` or `chain A and resi 35`.
+    - If key residues are far apart, orient+zoom aligns to the nearest cluster; to centre, reduce focus_zoom_level (closer) / remove zoom.
+    - Colouring shares the ss family pastels but leans "soft single-residue" (sh_* prefix), to avoid confusion with ss soft_blue/rose_pink.

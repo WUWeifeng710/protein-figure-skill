@@ -1,10 +1,10 @@
 meta:
   name: nature_highlight
-  title: Nature 高亮复合结构图
-  scene: 单结构多链高亮，突出关键区域（结合位点/突变位点/区段），配中性表面 + 活性卡通，适合论文 Figure 主图。
-  reference: "PyMOL-PUB cases/case_1.py（1AY7 / 1F34 高亮图）"
+  title: Nature highlight composite structure figure
+  scene: Single-structure multi-chain highlight, emphasising key regions (binding site / mutation / segment), paired with a neutral surface + active cartoon, ideal for the main Figure in a paper.
+  reference: "PyMOL-PUB cases/case_1.py (1AY7 / 1F34 highlight figures)"
   created: 2026-09-18
-  created_by: 我自建
+  created_by: agent-authored
 
 params:
   manuscript_format: Nature
@@ -19,7 +19,7 @@ params:
   coloring_plan:
     - ["{chain_A}", "0xF2F2F2"]
     - ["{chain_B}", "0x2D2F82"]
-    - ["{highlight_ranges}", "0xF08080"]   # 高亮区段，调用方按实际 PDB 填
+    - ["{highlight_ranges}", "0xF08080"]   # highlight segments; caller fills in per the actual PDB
   save_width: 1280
   save_ratio: 0.9
   dpi: 300
@@ -35,4 +35,4 @@ render:
     7. close()
   entry_class: HighlightStructureImage
   extra_steps: |
-    可选追加：obtain_widget_icon 生成旋转/箭头控件 PNG，用于在排版图中嵌入。
+    Optional add-on: obtain_widget_icon to generate rotation / arrow widget PNGs, for embedding into the layout figure.

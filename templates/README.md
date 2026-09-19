@@ -1,38 +1,38 @@
-# 模板机制说明
+# Template Mechanism
 
-## 模板目录结构
+## Template directory layout
 ```
 templates/
-├── _registry.md       # 预置风格清单（我提供选项时的数据来源）
-├── _template_format.md # 模板 yaml 格式规范
+├── _registry.md          # Preset style registry (data source when I present options)
+├── _template_format.md   # Template yaml format spec
 ├── nature_highlight.yaml
 ├── rmsd_compare.yaml
 ├── science_publication_layout.yaml
-└── <用户自定义模板>.yaml   # 通过"我看到一张好看图发你复现确认后沉淀"流程生成
+└── <user-custom-template>.yaml   # produced by the "send me a nice figure → I reproduce → you confirm → save" flow
 ```
 
-## 交互协议
+## Interaction protocol
 
-### 1. 用户提出预置风格选择
-**触发词**（任一即触发）："用预置风格"、"选个模板"、"有没有好看模板"、"套个风格"、"按 XX 风格画"。
-**动作**：我读取 `templates/_registry.md`，把可用模板以选项卡片形式呈现（每个模板含名称、适用场景、预览缩略图若有），让用户挑选。
+### 1. User requests a preset style
+**Triggers** (any one fires): "use a preset style", "pick a template", "any nice templates?", "apply a style", "draw in XX style".
+**Action**: I read `templates/_registry.md` and present the available templates as option cards (each with name, scene, and a thumbnail preview if one exists) for the user to choose from.
 
-### 2. 用户未提预置风格
-**默认行为**：按技能文档 + 用户本次输入的自由参数绘制，不套模板。
-**例外**：若我判断输入内容与某预置模板高度吻合（如"画个 RMSD 对比"），可主动推荐 1 个模板并说明理由，但**不强制**，用户可拒绝。
+### 2. User does not mention a preset style
+**Default behaviour**: render free-form using the skill docs + the user's current input; no template is applied.
+**Exception**: if the input matches a preset template very well (e.g. "draw an RMSD comparison"), I may proactively recommend one template with a short justification, but it is **not forced** — the user can decline.
 
-### 3. 沉淀自定义模板（"看图复现 → 确认 → 保存"流程）
-**触发词**（任一即触发）："保存成模板"、"这个风格记住"、"按这张图画"（发图）、"复现这张图的风格"。
-**流程**（必须走完 4 步，不可跳步）：
-1. **复现**：我读用户发的参考图（多模态），拆解其选区/表示方式/配色/旋转/版式，生成一份候选 yaml 写到 `templates/<候选名>.yaml`，并**先按该 yaml 画一张样图**给用户看。
-2. **确认**：用户审样图，明确说"可以/就这样/OK"才进入下一步；若有微调，我改 yaml 再画，循环直至用户满意。
-3. **命名**：用户给模板起名字（若未给，我按"场景 + 视觉特征"建议，如 `nature_binding_site`、`cell_membrane_cartoon`）。
-4. **入库**：确认 + 命名后，把候选 yaml 移到 `templates/`（若已在该目录则改名），并**同步在 `_registry.md` 加一行**（模板名、场景、参考图来源）。
+### 3. Sediment a custom template ("see figure → reproduce → confirm → save")
+**Triggers** (any one fires): "save as a template", "remember this style", "draw like this figure" (with an image), "reproduce this figure's style".
+**Flow** (must complete all 4 steps, no skipping):
+1. **Reproduce**: I read the user's reference figure (multimodal), decompose its selection / representation / colour / rotation / layout, generate a candidate yaml into `templates/<candidate>.yaml`, and **first render a sample figure from that yaml** for the user to inspect.
+2. **Confirm**: the user reviews the sample; only when they explicitly say "OK / good / that's it" do we proceed; for tweaks I adjust the yaml and re-render, looping until satisfied.
+3. **Name**: the user names the template; if none is given I suggest one from "scene + visual feature" (e.g. `nature_binding_site`, `cell_membrane_cartoon`).
+4. **Register**: after confirm + naming, move the candidate yaml into `templates/` (rename if it was already in that dir) and **add a row to `_registry.md`** (template name, scene, reference figure source).
 
-**硬性约束**：
-- 模板必须是**可复用参数**，不是绑定到某次 PDB 的具体代码——选区用变量（如 `{chain_A}`, `{residues}`），不能写死 A 链 1-30。
-- 模板 yaml 必须自包含所有绘图参数，**不依赖外部文件**。
-- 每个模板配一段"使用示例"，指明哪些参数是用户本次可覆写的。
+**Hard constraints**:
+- A template must be **reusable parameters**, not code bound to one particular PDB run — selections use variables (e.g. `{chain_A}`, `{residues}`), never hardcoded "chain A 1-30".
+- A template yaml must be **self-contained** with all drawing parameters; no dependency on external files.
+- Each template ships a "usage example" section marking which parameters the caller may override in this run.
 
-## 模板 yaml 格式（见 `_template_format.md`）
-模板 = 一份参数集 + 一段 Python 渲染脚本 + 元信息（名称、场景、参考图、创建时间）。渲染脚本读参数、调用 molpub API 出图，参数可被调用方覆写。
+## Template yaml format (see `_template_format.md`)
+Template = one param set + one Python render script + metadata (name, scene, reference figure, created time). The render script reads params, calls the molpub API to produce the figure; params may be overridden by the caller.

@@ -1,10 +1,10 @@
 meta:
   name: ppi_interface
-  title: 蛋白-蛋白界面（两链 within 半径取界面残基 + sticks + 半透明面）
-  scene: 两链（chain A / chain B）做 cartoon 背景，按 within 半径取界面残基（byres within），界面残基做 sticks + CA 球，两侧做半透明 molecular surface，白底柔光。适合 PPI 结合界面分析。
-  reference: "参考 PyMolClaw ppi.py，改写到 2.5.0 严格 API"
+  title: Protein-protein interface (two chains within radius to pick interface residues + sticks + translucent surface)
+  scene: Two chains (chain A / chain B) as cartoon background, pick interface residues by within radius (byres within), render interface residues as sticks + CA spheres, translucent molecular surface on both sides, white bg soft light. Suitable for PPI binding interface analysis.
+  reference: "Adapted from PyMolClaw ppi.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
@@ -38,19 +38,19 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 ppi_interface.py 参考实现）：
-    1. cmd.load；加载校验 count_atoms("all")>0
-    2. 白底柔光参数一组
-    3. remove resn HOH；hide everything, hetatm；hide everything
-    4. show cartoon, m；按链 color（chainA=lightblue, chainB=lightorange，elem C）
-    5. 界面残基：select ifaceA（byres chain A within {cutoff} of chain B）；select ifaceB（对称）
-    6. show sticks "sc. and (ifaceA or ifaceB)"；show spheres "n. CA and (ifaceA or ifaceB)"
-    7. 界面面（可选）：create surfA / surfB；show surface；set transparency；按侧分色
-    8. orient m；zoom "ifaceA or ifaceB"；ray；png dpi=300
+    No molpub class, direct cmd (see ppi_interface.py reference implementation):
+    1. cmd.load; load validation count_atoms("all")>0
+    2. white bg soft light param set
+    3. remove resn HOH; hide everything, hetatm; hide everything
+    4. show cartoon, m; per-chain color (chainA=lightblue, chainB=lightorange, elem C)
+    5. Interface residues: select ifaceA (byres chain A within {cutoff} of chain B); select ifaceB (symmetric)
+    6. show sticks "sc. and (ifaceA or ifaceB)"; show spheres "n. CA and (ifaceA or ifaceB)"
+    7. Interface surface (optional): create surfA / surfB; show surface; set transparency; color per side
+    8. orient m; zoom "ifaceA or ifaceB"; ray; png dpi=300
     9. mol.stop()
   entry_class: null
   extra_steps: |
-    - **within 运算符**（`chain A within 4.0 of chain B`）是 PyMOL 原生距离选区，2.5.0 可用。
-    - `byres` 按残基扩展界面（不是逐原子）。
-    - 想只看两链接触区：`cmd.zoom("ifaceA or ifaceB", focus_zoom)`。
-    - 与 dual_align_rmsd 不同：本模板不做叠合对齐，只画**单结构内**两链界面。
+    - **within operator** (`chain A within 4.0 of chain B`) is a PyMOL native distance selection, available in 2.5.0.
+    - `byres` extends the interface by residue (not atom-by-atom).
+    - To view only the two-chain contact region: `cmd.zoom("ifaceA or ifaceB", focus_zoom)`.
+    - Unlike dual_align_rmsd: this template does **no** overlay alignment, only draws the two-chain interface **within a single structure**.

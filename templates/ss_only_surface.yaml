@@ -1,14 +1,14 @@
 meta:
   name: ss_only_surface
-  title: 纯二级结构粉彩 cartoon（无 surface，第三版）
-  scene: 仅 cartoon 按二级结构（helix/strand/loop）上粉彩，无 surface 壳，白底柔光。适合想要干净线条、无壳遮挡的结构图。
-  reference: "用户 .pml 配方沉淀（纯 ss 粉彩无壳，原始 recipe_3_ss_only.pml 不在本技能内分发）"
+  title: Pure secondary-structure pastel cartoon (no surface, v3)
+  scene: Cartoon only, coloured by secondary structure (helix/strand/loop) in pastels; no surface shell; white-bg soft light. Ideal for clean lines with no shell occlusion.
+  reference: "User-sedimented .pml recipe (pure ss pastel, no shell; the original recipe_3_ss_only.pml is not distributed within this skill)"
   created: 2026-09-18
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
-  # 本模板不拆对象，直接对 {mol} 上色
+  # This template does not split objects; colours {mol} directly
   custom_colors:
     soft_blue:  [0.63, 0.75, 0.94]   # ss h
     rose_pink:  [0.94, 0.69, 0.75]   # ss s
@@ -19,7 +19,7 @@ params:
     loop: lavender
   hide_water: true
   hide_hetatm: true
-  # 关键：无 surface
+  # Key: no surface
   use_surface: false
   background: white
   ambient: 0.5
@@ -40,18 +40,18 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 ss_only_surface.py 参考实现）：
-    1. cmd.load 对象 m；set_color 三色（soft_blue/rose_pink/lavender）
-    2. 白底柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/cartoon_fancy_helices 等）
-    3. remove resn HOH；hide everything, hetatm；hide everything
-    4. show cartoon（不拆对象，直接对 m）；按 ss 上色：
+    No molpub class, direct cmd (see ss_only_surface.py reference implementation):
+    1. cmd.load object m; set_color three colours (soft_blue/rose_pink/lavender)
+    2. White-bg soft-light parameter group (bg_color + set ambient/two_sided_lighting/ray_shadows/cartoon_fancy_helices etc.)
+    3. remove resn HOH; hide everything, hetatm; hide everything
+    4. show cartoon (no object split, directly on m); colour by ss:
        color soft_blue,  m and ss h
        color rose_pink,  m and ss s
        color lavender,   m and not (ss h or ss s)
-    5. orient；ray；png dpi=300
+    5. orient; ray; png dpi=300
     6. mol.stop()
   entry_class: null
   extra_steps: |
-    - 本模板与 ss_milky / ss_frosted 的核心区别：无 surface，且 cartoon 不拆 cart 对象（直接 show cartoon + 对 m 上色）。
-    - 不 create cart/surf，orient 直接对 m。
-    - 想要壳时切 ss_milky（中性壳）或 ss_frosted（同色磨砂壳）。
+    - Core difference from ss_milky / ss_frosted: no surface, and the cartoon does not split into a cart object (directly show cartoon + colour m).
+    - No create cart/surf; orient directly on m.
+    - If you want a shell, switch to ss_milky (neutral shell) or ss_frosted (same-colour frosted shell).

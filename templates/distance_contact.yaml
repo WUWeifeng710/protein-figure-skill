@@ -1,16 +1,16 @@
 meta:
   name: distance_contact
-  title: 残基对距离 / 极性接触标注（sticks + CA 球 + dist mode=2）
-  scene: 选两残基（或两个选区）做 sticks + CA 球显示，画距离虚线 + 极性接触（键/氢键），白底柔光。适合结合位点距离标注、残基间相互作用。
-  reference: "参考 PyMolClaw distance.py，改写到 2.5.0 严格 API"
+  title: Residue-pair distance / polar contacts annotation (sticks + CA spheres + dist mode=2)
+  scene: Select two residues (or two selections), display them as sticks + CA spheres, draw distance dashes + polar contacts (bonds/H-bonds), white bg soft light. Suitable for binding-site distance annotation and inter-residue interactions.
+  reference: "Adapted from PyMolClaw distance.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
-  sel1: "resi 35"          # 第一选区（PyMOL 选区语法，可带链前缀）
-  sel2: "resi 52"          # 第二选区
-  contact_mode: 2          # dist mode：0=all, 1=polar, 2=hbond+key
+  sel1: "resi 35"          # first selection (PyMOL selection syntax, may carry a chain prefix)
+  sel2: "resi 52"          # second selection
+  contact_mode: 2          # dist mode: 0=all, 1=polar, 2=hbond+bond
   add_spheres: true
   sphere_scale: 0.5
   focus_zoom: 12
@@ -35,17 +35,17 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 distance_contact.py 参考实现）：
-    1. cmd.load；加载校验 count_atoms("all")>0
-    2. 白底柔光参数一组
-    3. remove resn HOH；hide everything, hetatm；hide everything
-    4. show cartoon, m（背景卡通）
-    5. select s1/s2（用参数选区）；show sticks "sc. and (s1 or s2)"；show spheres "n. CA and (s1 or s2)"
-    6. dist d1, s1, s2, mode={contact_mode}；set dash_color/black/dash_gap/dash_radius
-    7. orient s1；zoom "s1 or s2", focus_zoom；ray；png dpi=300
+    No molpub class, direct cmd (see distance_contact.py reference implementation):
+    1. cmd.load; load validation count_atoms("all")>0
+    2. white bg soft light param set
+    3. remove resn HOH; hide everything, hetatm; hide everything
+    4. show cartoon, m (background cartoon)
+    5. select s1/s2 (use the param selections); show sticks "sc. and (s1 or s2)"; show spheres "n. CA and (s1 or s2)"
+    6. dist d1, s1, s2, mode={contact_mode}; set dash_color/black/dash_gap/dash_radius
+    7. orient s1; zoom "s1 or s2", focus_zoom; ray; png dpi=300
     8. mol.stop()
   entry_class: null
   extra_steps: |
-    - 2.5.0 里 `select` 命名选区不吃 `+` 运算符拼接；sel1/sel2 是两个独立命名选区，show sticks 用 `sc. and (s1 or s2)`（or 是 PyMOL 选区运算符，能跑）。
-    - `dist` 的 `mode`：0=全部接触、1=极性、2=键+氢键。
-    - 想要更细的距离值标注，可加 `cmd.label("d1", '\"%.2f A\" % dist')`（PyMOL 内建 label 表达式）。
+    - In 2.5.0 the `select` named selection does not accept the `+` operator for concatenation; sel1/sel2 are two independent named selections, show sticks uses `sc. and (s1 or s2)` (or is a PyMOL selection operator, works fine).
+    - `dist` `mode`: 0=all contacts, 1=polar, 2=bonds+H-bonds.
+    - For finer distance value labels, add `cmd.label("d1", '"%.2f A" % dist')` (PyMOL built-in label expression).

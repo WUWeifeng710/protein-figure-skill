@@ -1,7 +1,7 @@
-# ensemble_overlay 模板渲染脚本参考（2.5.0 严格 API，已对 1AY7 出样图验证）
-# NMR / MD 多模型叠加（按 state 渐变 + 半透明）
-# 运行：在装有 PyMOL 2.5.0 + PyMOL-PUB 的环境里跑，例如 `conda run -n pymol_pub python ensemble_overlay.py`
-# 用法：改 PDB / OBJECT / STYLE / TRANSPARENCY 后跑
+# ensemble_overlay template render script reference (2.5.0 strict API, validated with 1AY7 sample figure)
+# NMR / MD multi-model overlay (state-based gradient + translucent)
+# Run: execute in an environment with PyMOL 2.5.0 + PyMOL-PUB installed, e.g. `conda run -n pymol_pub python ensemble_overlay.py`
+# Usage: modify PDB / OBJECT / STYLE / TRANSPARENCY before running
 import os, sys
 from pymol2 import PyMOL
 
@@ -20,7 +20,7 @@ cmd.load(PDB, OBJECT, quiet=1)
 if int(cmd.count_atoms("all")) == 0:
     print("LOAD FAILED: 0 atoms after load"); mol.stop(); sys.exit(1)
 
-# 白底柔光
+# white bg soft light
 cmd.bg_color("white")
 cmd.set("ray_opaque_background", 1)
 cmd.set("ambient", 0.5); cmd.set("two_sided_lighting", 1)
@@ -30,12 +30,12 @@ cmd.set("ray_trace_gain", 0.1); cmd.set("orthoscopic", 1)
 cmd.set("cartoon_fancy_helices", 1); cmd.set("cartoon_smooth_loops", 1)
 cmd.set("cartoon_flat_sheets", 1); cmd.set("cartoon_highlight_color", "grey50")
 
-# 清场
+# clear stage
 cmd.remove(f"{OBJECT} and resn HOH")
 cmd.hide("everything", "hetatm")
 cmd.hide("everything")
 
-# 表示 + state 渐变（多模型 NMR 时生效；单帧退化可忽略报错）
+# Representation + state gradient (effective for multi-model NMR; single-frame degradation: errors can be ignored)
 cmd.show(STYLE, OBJECT)
 try:
     cmd.spectrum("state", "rainbow", OBJECT)
@@ -43,7 +43,7 @@ except Exception as e:
     print("spectrum state warn:", e)
 cmd.set("transparency", TRANSPARENCY)
 
-# 构图 + 300dpi
+# compose + 300dpi
 cmd.orient(OBJECT)
 cmd.ray()
 cmd.png(SAVE_PATH, width=SAVE_WIDTH, height=int(SAVE_WIDTH * SAVE_RATIO), dpi=SAVE_DPI, quiet=1)

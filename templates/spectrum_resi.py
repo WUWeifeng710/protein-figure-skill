@@ -1,13 +1,13 @@
-# spectrum_resi 模板渲染脚本参考（2.5.0 严格 API，已对 1AY7 出样图验证）
-# 序列位置 B-factor/pLDDT 谱着色（蓝白红渐变 cartoon + CA 小球）
-# 运行：在装有 PyMOL 2.5.0 + PyMOL-PUB 的环境里跑，例如 `conda run -n pymol_pub python spectrum_resi.py`
-# 用法：改 PDB / OBJECT / PROPERTY / PALETTE 后跑
+# spectrum_resi template render script reference (2.5.0 strict API, validated with 1AY7 sample figure)
+# Sequence-position B-factor / pLDDT spectrum coloring (blue-white-red gradient cartoon + CA spheres)
+# Run: execute in an environment with PyMOL 2.5.0 + PyMOL-PUB installed, e.g. `conda run -n pymol_pub python spectrum_resi.py`
+# Usage: modify PDB / OBJECT / PROPERTY / PALETTE before running
 import os, sys
 from pymol2 import PyMOL
 
 PDB = "protein.pdb"
 OBJECT = "m"
-PROPERTY = "resi"              # 默认按残基位置；PDB 带 b 列可试 "b"，带 plddt 列可试 "plddt"
+PROPERTY = "resi"              # default: by residue position; try "b" if PDB has a b column, "plddt" if it has a plddt column
 PALETTE = "blue_white_red"     # blue_white_red / blue_green_red / rainbow / red_white_blue
 SAVE_PATH = "nice_fig_spectrum.png"
 SAVE_WIDTH, SAVE_RATIO, SAVE_DPI = 1600, 1.0, 300
@@ -16,12 +16,12 @@ mol = PyMOL()
 mol.start()
 cmd = mol.cmd
 
-# 0) 加载 + 校验（命中 0 即退出）
+# 0) Load + validate (exit on 0 matches)
 cmd.load(PDB, OBJECT, quiet=1)
 if int(cmd.count_atoms("all")) == 0:
     print("LOAD FAILED: 0 atoms after load"); mol.stop(); sys.exit(1)
 
-# 1) 白底柔光
+# 1) white bg soft light
 cmd.bg_color("white")
 cmd.set("ray_opaque_background", 1)
 cmd.set("ambient", 0.5)
@@ -37,20 +37,20 @@ cmd.set("cartoon_smooth_loops", 1)
 cmd.set("cartoon_flat_sheets", 1)
 cmd.set("cartoon_highlight_color", "grey50")
 
-# 2) 清场
+# 2) clear stage
 cmd.remove(f"{OBJECT} and resn HOH")
 cmd.hide("everything", "hetatm")
 cmd.hide("everything")
 
-# 3) cartoon + spectrum 渐变
+# 3) cartoon + spectrum gradient
 cmd.show("cartoon", OBJECT)
 cmd.spectrum(PROPERTY, PALETTE, OBJECT)
 
-# 4) CA 小球（可选）
+# 4) CA spheres (optional)
 cmd.show("spheres", f"{OBJECT} and name CA")
 cmd.set("sphere_scale", 0.5)
 
-# 5) 构图 + 300dpi
+# 5) compose + 300dpi
 cmd.orient(OBJECT)
 cmd.ray()
 cmd.png(SAVE_PATH, width=SAVE_WIDTH, height=int(SAVE_WIDTH * SAVE_RATIO), dpi=SAVE_DPI, quiet=1)

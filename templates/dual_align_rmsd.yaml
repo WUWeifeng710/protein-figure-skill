@@ -1,17 +1,17 @@
 meta:
   name: dual_align_rmsd
-  title: 双结构叠合对齐 + RMSD（expected vs predicted / WT vs mutant）
-  scene: 加载两个结构（同 PDB 自叠合演示或不同 PDB 真对齐），按 CA 做 align 计算 RMSD，叠合显示两结构 cartoon（颜色区分 + 半透明），适合 RMSD 谱 / 突变对比 / 同基因不同构象。
-  reference: "参考 PyMolClaw align.py，改写到 2.5.0 严格 API"
+  title: Dual-structure overlay align + RMSD (expected vs predicted / WT vs mutant)
+  scene: Load two structures (self-overlay demo of the same PDB, or real alignment of two different PDBs), align by CA to compute RMSD, overlay-display both structures as cartoon (distinguished color + translucent). Suitable for RMSD spectra / mutation comparison / different conformations of the same gene.
+  reference: "Adapted from PyMolClaw align.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   pdb1: "structure1.pdb"
   pdb2: "structure2.pdb"
-  name1: "s1"             # 对象命名（避保留字：a/b 等勿用）
+  name1: "s1"             # object naming (avoid reserved words: do not use a/b etc.)
   name2: "s2"
-  align_ca: true          # 按 CA 对齐
+  align_ca: true          # align by CA
   align_cutoff: 5.0
   color1: lightblue
   color2: salmon
@@ -37,18 +37,18 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 dual_align_rmsd.py 参考实现）：
-    1. cmd.load(pdb1, name1)；cmd.load(pdb2, name2)；加载校验 count_atoms("all")>0
-    2. align name2 CA, name1 CA（RMSD = 返回值；cutoff={align_cutoff}）
-    3. 白底柔光参数一组
-    4. remove resn HOH；hide everything, hetatm；hide everything（逐对象）
-    5. show cartoon, name1 + name2；color {color1} name1 elem C；color {color2} name2 elem C
+    No molpub class, direct cmd (see dual_align_rmsd.py reference implementation):
+    1. cmd.load(pdb1, name1); cmd.load(pdb2, name2); load validation count_atoms("all")>0
+    2. align name2 CA, name1 CA (RMSD = return value; cutoff={align_cutoff})
+    3. white bg soft light param set
+    4. remove resn HOH; hide everything, hetatm; hide everything (per-object)
+    5. show cartoon, name1 + name2; color {color1} name1 elem C; color {color2} name2 elem C
     6. set cartoon_transparency {transparency2}, name2
-    7. orient name1；ray；png dpi=300
+    7. orient name1; ray; png dpi=300
     8. mol.stop()
   entry_class: null
   extra_steps: |
-    - **2.5.0 坑（已踩）**：对象名不能用保留字（`a`/`b` 等）——`cmd.load(pdb, "b")` 会被加下划线变 `b_`；用 `s1`/`s2` 安全命名。
-    - `hide` 选区**不用 `or` 运算符**（2.5.0 严格模式 "Invalid Operator"）；逐对象 `hide("everything", "s1")` + `hide("everything", "s2")`。
-    - `cmd.align` 返回 RMSD 元组（`(rmsd, n_atoms, ...)`），第一元素即 RMSD 数值。
-    - 同 PDB 自叠合 RMSD=0（演示用）；真对比需两 PDB。
+    - **2.5.0 pitfall (hit)**: object names must not use reserved words (`a`/`b` etc.) -- `cmd.load(pdb, "b")` gets an underscore appended, becoming `b_`; use safe names like `s1`/`s2`.
+    - `hide` selection **does not use the `or` operator** (2.5.0 strict mode "Invalid Operator"); per-object `hide("everything", "s1")` + `hide("everything", "s2")`.
+    - `cmd.align` returns an RMSD tuple (`(rmsd, n_atoms, ...)`); the first element is the RMSD value.
+    - Self-overlay of the same PDB gives RMSD=0 (for demo); a real comparison needs two PDBs.

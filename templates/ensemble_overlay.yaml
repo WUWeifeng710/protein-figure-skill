@@ -1,10 +1,10 @@
 meta:
   name: ensemble_overlay
-  title: NMR / MD 多模型叠加（按 state 渐变 + 半透明）
-  scene: 多模型 NMR / MD 系综叠加显示，按 state 做彩虹渐变 + 半透明，适合展示结构柔性 / 构象系综。单帧 PDB 无多模型时退化为单状态演示。
-  reference: "参考 PyMolClaw ensemble.py，改写到 2.5.0 严格 API"
+  title: NMR / MD multi-model overlay (state-based gradient + translucent)
+  scene: Overlay display of a multi-model NMR / MD ensemble, rainbow gradient by state + translucent, suitable for showing structural flexibility / conformational ensemble. Single-frame PDB without multiple models degrades to a single-state demo.
+  reference: "Adapted from PyMolClaw ensemble.py, rewritten for the 2.5.0 strict API"
   created: 2026-09-19
-  created_by: 用户沉淀
+  created_by: user-sedimented
 
 params:
   object: "{mol}"
@@ -32,17 +32,17 @@ params:
 
 render:
   description: |
-    不走 molpub 类，直接 cmd（见 ensemble_overlay.py 参考实现）：
-    1. cmd.load；加载校验 count_atoms("all")>0
-    2. 白底柔光参数一组
-    3. remove resn HOH；hide everything, hetatm；hide everything
+    No molpub class, direct cmd (see ensemble_overlay.py reference implementation):
+    1. cmd.load; load validation count_atoms("all")>0
+    2. white bg soft light param set
+    3. remove resn HOH; hide everything, hetatm; hide everything
     4. show {style}, m
-    5. spectrum state rainbow m（多模型时按 state 渐变；单帧时退化为单状态，可忽略该命令报错）
+    5. spectrum state rainbow m (state-based gradient when multi-model; degrades to single-state for a single frame, the command error can be ignored)
     6. set transparency {transparency}
-    7. orient m；ray；png dpi=300
+    7. orient m; ray; png dpi=300
     8. mol.stop()
   entry_class: null
   extra_steps: |
-    - **2.5.0 坑（已踩）**：`spectrum state` 在 conda 2.5.0 报 "Unsupported Ptype for expr: state"——单帧 PDB 无多模型时该命令无意义；多模型 NMR PDB 可试 `spectrum state` 或改用 `spectrum resi` 按序列位置。
-    - 多模型 NMR PDB 每个模型是一个 state，PyMOL 默认按 state 叠显示；要"只看第 N 帧"用 `frame N`。
-    - 本模板默认单帧退化为单状态（演示用途），真实 NMR 系综需多模型 PDB。
+    - **2.5.0 pitfall (hit)**: `spectrum state` reports "Unsupported Ptype for expr: state" in conda 2.5.0 -- for a single-frame PDB without multiple models this command is meaningless; for a multi-model NMR PDB you can try `spectrum state` or switch to `spectrum resi` by sequence position.
+    - In a multi-model NMR PDB each model is one state; PyMOL overlays display by state by default; to "view only frame N" use `frame N`.
+    - This template defaults to a single frame degrading to a single state (for demo purposes); a real NMR ensemble requires a multi-model PDB.
