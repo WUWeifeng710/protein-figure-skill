@@ -1,0 +1,56 @@
+meta:
+  name: ppi_interface
+  title: 蛋白-蛋白界面（两链 within 半径取界面残基 + sticks + 半透明面）
+  scene: 两链（chain A / chain B）做 cartoon 背景，按 within 半径取界面残基（byres within），界面残基做 sticks + CA 球，两侧做半透明 molecular surface，白底柔光。适合 PPI 结合界面分析。
+  reference: "参考 PyMolClaw ppi.py，改写到 2.5.0 严格 API"
+  created: 2026-09-19
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  chain_a: "A"
+  chain_b: "B"
+  within_cutoff: 4.0
+  color_a: lightblue
+  color_b: lightorange
+  interface_spheres: true
+  add_interface_surface: true
+  surface_transparency: 0.6
+  hide_water: true
+  hide_hetatm: true
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  focus_zoom: 8
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 ppi_interface.py 参考实现）：
+    1. cmd.load；加载校验 count_atoms("all")>0
+    2. 白底柔光参数一组
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. show cartoon, m；按链 color（chainA=lightblue, chainB=lightorange，elem C）
+    5. 界面残基：select ifaceA（byres chain A within {cutoff} of chain B）；select ifaceB（对称）
+    6. show sticks "sc. and (ifaceA or ifaceB)"；show spheres "n. CA and (ifaceA or ifaceB)"
+    7. 界面面（可选）：create surfA / surfB；show surface；set transparency；按侧分色
+    8. orient m；zoom "ifaceA or ifaceB"；ray；png dpi=300
+    9. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - **within 运算符**（`chain A within 4.0 of chain B`）是 PyMOL 原生距离选区，2.5.0 可用。
+    - `byres` 按残基扩展界面（不是逐原子）。
+    - 想只看两链接触区：`cmd.zoom("ifaceA or ifaceB", focus_zoom)`。
+    - 与 dual_align_rmsd 不同：本模板不做叠合对齐，只画**单结构内**两链界面。

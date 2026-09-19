@@ -1,0 +1,55 @@
+meta:
+  name: mutation_site
+  title: 突变位点结构分析（单残基 sticks + CA 球 + 环境 cartoon + 着色区分）
+  scene: 指定一个突变残基，按 around 半径取周边环境做半透明 cartoon，突变残基做 sticks + CA 球，色相区分（salmon / red），白底柔光。适合 WT vs mutant 对比、突变效应定位。
+  reference: "参考 PyMolClaw mutation.py，改写到 2.5.0 严格 API"
+  created: 2026-09-19
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  mut_residue: 35          # 突变残基号（按目标 PDB 实际改）
+  env_cutoff: 5.0         # 环境半径（Å）
+  color_mut_site: lightorange
+  color_mut_carbon: red
+  env_cartoon_transparency: 0.6
+  add_spheres: true
+  sphere_scale: 0.6
+  hide_water: true
+  hide_hetatm: true
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  focus_zoom: 8
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 mutation_site.py 参考实现）：
+    1. cmd.load；加载校验 count_atoms("all")>0
+    2. 白底柔光参数一组
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. select mut_site（{object} and resi {mut_residue}）；select context（byres around {env_cutoff}，排除 mut_site）
+    5. show cartoon, context；set cartoon_transparency 0.6
+    6. show sticks, "sc. and (mut_site)"；show spheres, "n. CA and (mut_site)"；set sphere_scale 0.6
+    7. color {color_mut_site}, mut_site；color {color_mut_carbon}, "{object} and resi {mut_residue} and elem C"
+    8. hide 未选中部分（m and not (mut_site or context)）
+    9. orient mut_site；zoom mut_site, focus_zoom；ray；png dpi=300
+    10. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - 本模板是"单残基突变"特写；要 WT vs mut 双结构对比，用 `align` 模板叠合 + 高亮两个 mut_site。
+    - `byres` 选区要在 `hide("everything")` 之后做（hide 清空选区，同 active_site_highlight 的坑）。
+    - 突变残基号要对应目标 PDB 实际存在（count_atoms 校验）。

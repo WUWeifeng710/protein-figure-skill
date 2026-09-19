@@ -1,0 +1,60 @@
+meta:
+  name: residues_only
+  title: 关键残基棒特写（完全隐藏蛋白，只显指定残基 sticks）
+  scene: 整条蛋白完全隐藏，只对若干关键残基（催化位点/突变位点/结合位点）显示柔和粉彩 sticks，白底柔光。适合突出局部关键残基，让观者视线聚焦。
+  reference: "用户 .pml 配方沉淀（隐藏蛋白只显关键残基棒，原始 recipe_5_residues_only.pml 不在本技能内分发）"
+  created: 2026-09-18
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  # 关键残基列表：每项 = [选区字符串, 颜色名]。选区支持 resi 35 / A/35 / chain A+resi 12 等，可带链前缀。
+  key_residues:
+    - [ "resi 35", "sh_pink" ]
+    - [ "resi 52", "sh_blue" ]
+    - [ "resi 62", "sh_lav" ]
+    - [ "resi 63", "sh_cream" ]
+  # 柔和粉彩调色板（可调值 / 增删颜色名，key_residues 引用这里的颜色名）
+  custom_colors:
+    sh_pink:  [0.91, 0.73, 0.76]
+    sh_blue:  [0.67, 0.75, 0.86]
+    sh_lav:   [0.80, 0.76, 0.86]
+    sh_cream: [0.98, 0.93, 0.80]
+  hide_water: true
+  hide_hetatm: true
+  hide_protein: true          # 关键：整条蛋白卡通都藏掉，只留残基棒
+  stick_radius: 0.24
+  stick_ball: 1
+  stick_ball_ratio: 1.6
+  background: white
+  ambient: 0.45
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  # 构图对准关键残基（配方用 zoom ... 4 拉近）
+  focus_zoom_level: 4
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 residues_only.py 参考实现）：
+    1. cmd.load 对象 m；set_color 4 色柔和粉彩
+    2. 白底 + 柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/...）
+    3. 棒状参数：set stick_radius / stick_ball / stick_ball_ratio
+    4. 清场：remove resn HOH；hide everything, hetatm；hide everything
+       （整条蛋白卡通随之隐藏——本配方"只显残基棒"的要点）
+    5. 对每个关键残基 select ki；把 ki 合并成选区串 show sticks；逐个 color
+    6. orient + zoom(关键残基串, level)；ray；png dpi=300
+    7. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - 本配方是"只显残基棒"族，与 ss/pastel 的"cartoon + 壳"族不同：蛋白体完全不显示。
+    - key_residues 选区可按需增删/换色；带链前缀写法 `A/35` 或 `chain A and resi 35`。
+    - 关键残基若离得远，orient+zoom 对准最近一簇；想居中可把 focus_zoom_level 调小（更近）/ 去掉 zoom。
+    - 配色与 ss 族共用粉彩但偏"柔和单残基"（sh_* 前缀），避免与 ss 的 soft_blue/rose_pink 混淆。

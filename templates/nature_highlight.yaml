@@ -1,0 +1,38 @@
+meta:
+  name: nature_highlight
+  title: Nature 高亮复合结构图
+  scene: 单结构多链高亮，突出关键区域（结合位点/突变位点/区段），配中性表面 + 活性卡通，适合论文 Figure 主图。
+  reference: "PyMOL-PUB cases/case_1.py（1AY7 / 1F34 高亮图）"
+  created: 2026-09-18
+  created_by: 我自建
+
+params:
+  manuscript_format: Nature
+  cache_contents:
+    - "residue:HOH"
+  representation_plan:
+    - ["{chain_A}", "surface"]
+    - ["{chain_B}", "cartoon"]
+  closed_surface: true
+  independent_color: true
+  rotate: [330, 10, 270]
+  coloring_plan:
+    - ["{chain_A}", "0xF2F2F2"]
+    - ["{chain_B}", "0x2D2F82"]
+    - ["{highlight_ranges}", "0xF08080"]   # 高亮区段，调用方按实际 PDB 填
+  save_width: 1280
+  save_ratio: 0.9
+  dpi: 300
+
+render:
+  description: |
+    1. HighlightStructureImage(structure_paths=[pdb])
+    2. set_cache(cache_contents)
+    3. set_shape(representation_plan, independent_color=True, closed_surface=True)
+    4. set_state(rotate)
+    5. set_color(coloring_plan)
+    6. save(save_path, width, ratio, dpi=300)
+    7. close()
+  entry_class: HighlightStructureImage
+  extra_steps: |
+    可选追加：obtain_widget_icon 生成旋转/箭头控件 PNG，用于在排版图中嵌入。

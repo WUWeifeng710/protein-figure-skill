@@ -1,0 +1,82 @@
+meta:
+  name: pastel_cartoon_surface
+  title: 粉彩链着色 cartoon + 乳白半透明 surface
+  scene: 单结构多链，cartoon 按链上粉彩 + surface 中性乳白半透明壳，白底柔光发表级，适合多链复合结构主图。
+  reference: "用户 .pml 配方沉淀（粉彩 cartoon + 乳白 surface，原始配方 recipe.pml 不在本技能内分发）"
+  created: 2026-09-18
+  created_by: 用户沉淀
+
+params:
+  # —— 对象名（recipe 默认 m；按 PDB 加载对象覆写）——
+  object: "{mol}"
+
+  # —— 拆对象（关键：cart / surf 分开上色互不干扰，等价 closed_surface=True 思路）——
+  cartoon_object: "{mol}_cart"
+  surface_object: "{mol}_surf"
+
+  # —— 自定义粉彩调色板（RGB 0-1，超 4 链自行扩展）——
+  custom_colors:
+    soft_blue:  [0.63, 0.75, 0.94]
+    rose_pink:  [0.94, 0.69, 0.75]
+    lavender:   [0.78, 0.72, 0.84]
+    soft_cream: [0.98, 0.93, 0.80]
+
+  # —— 链 → 颜色映射（按 PDB 实际链覆写；超过 4 链加 set_color + color）——
+  chain_color_map:
+    A: soft_blue
+    B: rose_pink
+    C: lavender
+    D: soft_cream
+
+  # —— 清场 ——
+  hide_water: true
+  hide_hetatm: true
+
+  # —— surface 壳 ——
+  surface_color: "gray90"      # 可换 white
+  surface_transparency: 0.60   # 0.45 较实 / 0.75 很透
+
+  # —— 渲染参数（白底 + 柔光）——
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+
+  # —— 输出 ——
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+  manuscript_format: Nature
+
+render:
+  description: |
+    该配方超出 molpub 标准 API 的范畴（自定义 set_color 调色板 + create 拆对象 + 渲染参数），
+    渲染脚本**不走 HighlightStructureImage 类**，而是直接调用 molpub 的 _mol.cmd 命令
+    （等价于在 PyMOL 里 run recipe.pml）：
+    1. set_color 定义 4 个粉彩（soft_blue / rose_pink / lavender / soft_cream）
+    2. bg_color + set ambient/two_sided_lighting/ray_trace_mode/ray_shadows/antialias/
+       depth_cue/ray_trace_gain/orthoscopic/cartoon_fancy_helices/cartoon_smooth_loops/
+       cartoon_flat_sheets/cartoon_highlight_color
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. create {cartoon_object}, {object}；create {surface_object}, {object}
+    5. show cartoon, {cartoon_object}；按 chain_color_map 逐链 color ... and chain X
+    6. show surface, {surface_object}；color {surface_color}；set transparency, {surface_transparency}
+    7. orient {cartoon_object}；ray {save_width}
+    8. png {save_path}, dpi={dpi}
+    9. close() 释放 PyMOL 进程
+  entry_class: null   # 不用 molpub 类，直接 cmd
+  extra_steps: |
+    - 超 4 条链：先 set_color 自定义新色名，再补 color ... and chain E/F/...。
+    - 若需嵌入出版级 Figure（Nature 双列等），先生成该 PNG（dpi=300），再走
+      science_publication_layout 模板排版；子图 dpi 必须 ≥ 目标期刊 minimum_dpi。
+    - 与 nature_highlight 的区别：本模板用 create 拆对象 + 渲染参数，粉彩更柔和；
+      nature_highlight 走 closed_surface=True + 中性色 0xF2F2F2/0x2D2F82，风格更硬。

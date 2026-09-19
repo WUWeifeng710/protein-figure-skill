@@ -1,0 +1,59 @@
+meta:
+  name: active_site_highlight
+  title: 活性位点特写（关键残基 sticks + 半透明 cartoon 环境 + 极性接触虚线）
+  scene: 指定若干催化/结合残基，按 around 半径取周边环境做成半透明 cartoon，关键残基做 sticks + CA 球，残基间画极性接触虚线，白底柔光。适合突出局部位点机制。
+  reference: "参考 PyMolClaw active_site.py，改写到 2.5.0 严格 API"
+  created: 2026-09-19
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  key_residues: [35, 52, 62, 63]   # 关键残基号（示例值，调用方按目标 PDB 实际改）
+  env_cutoff: 5.0                  # 周边环境半径（Å）
+  color_catalytic: green          # 关键残基 sticks 颜色
+  color_env_cartoon: "green"      # 环境 cartoon 颜色（配合 0.7 透明）
+  env_cartoon_transparency: 0.7
+  add_polar_contacts: true         # 残基间极性接触（dist mode=2）
+  contact_dash_color: black
+  hide_water: true
+  hide_hetatm: true
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  focus_zoom: 10
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 active_site_highlight.py 参考实现）：
+    1. cmd.load；加载校验 count_atoms("all")>0（命中 0 即报错退出）
+    2. 白底柔光参数一组
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. 关键残基选区：**逐个 select + extend 合并**（select 命名选区严格模式不吃 +/or 拼接，
+       用 `cmd.extend` 做选区加法最稳）
+    5. 环境选区：`cmd.select("cat_env", "byres (catalytic around {env_cutoff}) and not catalytic")`
+    6. show cartoon, cat_env；set cartoon_transparency 0.7
+    7. show sticks, "sc. and (m and (...))"；show spheres, "n. CA and (...)"；set sphere_scale 0.5
+    8. 清场只藏"未选中"：hide everything, "m and not (catalytic or cat_env)"
+    9. 极性接触：cmd.dist("cat_contacts", "catalytic", "catalytic", mode=2)（键+氢键）
+    10. orient catalytic；zoom catalytic, {focus_zoom}；ray；png dpi=300
+    11. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - **核心坑（已实测）**：conda 2.5.0 里 `select` 命名选区不吃 `+` 运算符拼接（报 "Invalid selection name"）；
+      `count_atoms` 能吃但 `select` 不行。改用 `cmd.select` + `cmd.extend` 做选区加法。
+    - `byres` 依赖 `catalytic` 选区还在，必须在 `hide("everything")` **之后**（hide 会清空选区）。
+    - 极性接触 `dist mode=2` 是键+氢键；若 PDB 缺 H 原子（无氢键），接触线可能稀疏或无。
+    - 关键残基号要对应目标 PDB 实际存在（用 count_atoms 校验）。

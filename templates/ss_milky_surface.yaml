@@ -1,0 +1,62 @@
+meta:
+  name: ss_milky_surface
+  title: 二级结构粉彩 cartoon + 乳白半透明 surface（第一版）
+  scene: cartoon 按二级结构（helix/strand/loop）上粉彩，surface 中性 gray90 + 0.60 透，白底柔光，适合突出二级结构 + 柔白壳。
+  reference: "用户 .pml 配方沉淀（ss 粉彩 + 中性壳，原始 recipe_1_ss_milky.pml 不在本技能内分发）"
+  created: 2026-09-18
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  cartoon_object: "{mol}_cart"
+  surface_object: "{mol}_surf"
+  custom_colors:
+    soft_blue:  [0.63, 0.75, 0.94]   # ss h（alpha 螺旋）
+    rose_pink:  [0.94, 0.69, 0.75]   # ss s（beta 折叠）
+    lavender:   [0.78, 0.72, 0.84]   # loop（非 h/s）
+  # 二级结构 → 颜色映射（按 ss 选区，不用拆链）
+  ss_color_map:
+    ss_h: soft_blue
+    ss_s: rose_pink
+    loop: lavender          # 选区 = 对象 and not (ss h or ss s)
+  hide_water: true
+  hide_hetatm: true
+  surface_color: "gray90"
+  surface_transparency: 0.60
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 ss_milky_surface.py 参考实现）：
+    1. cmd.load 对象；set_color 三色（soft_blue/rose_pink/lavender）
+    2. 白底柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/cartoon_fancy_helices 等）
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. create cart, m；create surf, m
+    5. show cartoon, cart；按 ss 上色：
+       color soft_blue,  cart and ss h
+       color rose_pink,  cart and ss s
+       color lavender,   cart and not (ss h or ss s)
+    6. show surface, surf；color gray90；set transparency 0.60
+    7. orient cart；ray；png dpi=300
+    8. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - ss 选区（ss h / ss s / loop）是 PyMOL 内置选择，迁移 2.5.0 时正常。
+    - surface 中性单色（gray90），与 ss_milky 的"乳白壳"风格一致。
+    - 与 ss_frosted 区别：本模板 surface 单色中性；ss_frosted surface 按 ss 同色（磨砂玻璃更浓）。
+    - 与 ss_only 区别：本模板有 surface 壳；ss_only 纯 cartoon 无 surface。

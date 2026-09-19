@@ -1,0 +1,57 @@
+meta:
+  name: ss_only_surface
+  title: 纯二级结构粉彩 cartoon（无 surface，第三版）
+  scene: 仅 cartoon 按二级结构（helix/strand/loop）上粉彩，无 surface 壳，白底柔光。适合想要干净线条、无壳遮挡的结构图。
+  reference: "用户 .pml 配方沉淀（纯 ss 粉彩无壳，原始 recipe_3_ss_only.pml 不在本技能内分发）"
+  created: 2026-09-18
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  # 本模板不拆对象，直接对 {mol} 上色
+  custom_colors:
+    soft_blue:  [0.63, 0.75, 0.94]   # ss h
+    rose_pink:  [0.94, 0.69, 0.75]   # ss s
+    lavender:   [0.78, 0.72, 0.84]   # loop
+  ss_color_map:
+    ss_h: soft_blue
+    ss_s: rose_pink
+    loop: lavender
+  hide_water: true
+  hide_hetatm: true
+  # 关键：无 surface
+  use_surface: false
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 ss_only_surface.py 参考实现）：
+    1. cmd.load 对象 m；set_color 三色（soft_blue/rose_pink/lavender）
+    2. 白底柔光参数一组（bg_color + set ambient/two_sided_lighting/ray_shadows/cartoon_fancy_helices 等）
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. show cartoon（不拆对象，直接对 m）；按 ss 上色：
+       color soft_blue,  m and ss h
+       color rose_pink,  m and ss s
+       color lavender,   m and not (ss h or ss s)
+    5. orient；ray；png dpi=300
+    6. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - 本模板与 ss_milky / ss_frosted 的核心区别：无 surface，且 cartoon 不拆 cart 对象（直接 show cartoon + 对 m 上色）。
+    - 不 create cart/surf，orient 直接对 m。
+    - 想要壳时切 ss_milky（中性壳）或 ss_frosted（同色磨砂壳）。

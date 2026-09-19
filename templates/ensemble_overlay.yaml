@@ -1,0 +1,48 @@
+meta:
+  name: ensemble_overlay
+  title: NMR / MD 多模型叠加（按 state 渐变 + 半透明）
+  scene: 多模型 NMR / MD 系综叠加显示，按 state 做彩虹渐变 + 半透明，适合展示结构柔性 / 构象系综。单帧 PDB 无多模型时退化为单状态演示。
+  reference: "参考 PyMolClaw ensemble.py，改写到 2.5.0 严格 API"
+  created: 2026-09-19
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  style: cartoon          # cartoon / lines / spheres
+  add_spheres: false
+  transparency: 0.3
+  hide_water: true
+  hide_hetatm: true
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 ensemble_overlay.py 参考实现）：
+    1. cmd.load；加载校验 count_atoms("all")>0
+    2. 白底柔光参数一组
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. show {style}, m
+    5. spectrum state rainbow m（多模型时按 state 渐变；单帧时退化为单状态，可忽略该命令报错）
+    6. set transparency {transparency}
+    7. orient m；ray；png dpi=300
+    8. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - **2.5.0 坑（已踩）**：`spectrum state` 在 conda 2.5.0 报 "Unsupported Ptype for expr: state"——单帧 PDB 无多模型时该命令无意义；多模型 NMR PDB 可试 `spectrum state` 或改用 `spectrum resi` 按序列位置。
+    - 多模型 NMR PDB 每个模型是一个 state，PyMOL 默认按 state 叠显示；要"只看第 N 帧"用 `frame N`。
+    - 本模板默认单帧退化为单状态（演示用途），真实 NMR 系综需多模型 PDB。

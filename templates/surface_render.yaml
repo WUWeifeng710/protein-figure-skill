@@ -1,0 +1,51 @@
+meta:
+  name: surface_render
+  title: 分子面渲染（surface / mesh / dots，按链分色 + 半透明）
+  scene: 独立分子面风格——整条结构做 surface（或 mesh/dots），按链分色 + 半透明，白底柔光。适合展示分子面形状 / 结合口袋 / 蛋白表面。
+  reference: "参考 PyMolClaw surface.py，改写到 2.5.0 严格 API"
+  created: 2026-09-19
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  surface_style: surface    # surface / mesh / dots
+  # 按链分色（用 2.5.0 内置色，避免跨实例自定义色 "Unknown color" 坑）
+  chain_colors:
+    A: lightblue
+    B: lightorange
+  transparency: 0.4
+  hide_water: true
+  hide_hetatm: true
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 surface_render.py 参考实现）：
+    1. cmd.load；加载校验 count_atoms("all")>0
+    2. 白底柔光参数一组
+    3. remove resn HOH；hide everything, hetatm；hide everything
+    4. show {surface_style}, m（surface / mesh / dots）
+    5. 按链 color（用内置色 lightblue/lightorange）；set transparency {transparency}
+    6. orient m；ray；png dpi=300
+    7. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - **2.5.0 坑（已踩）**：`set surface_quality 20` 会报 "Unknown color"（surface_quality 在 2.5.0 严格模式校验异常）；直接不 set 该参数即可，用默认表面精度。
+    - **按链分色要用 2.5.0 内置色**（lightblue/lightorange/salmon 等）；自定义 gs_* 色须在同一 PyMOL 实例内 set_color 定义，跨实例会 "Unknown color"。
+    - 想要按 B-factor 给面着色，用 `cmd.spectrum("b","blue_white_red","m")`（PDB 带 b 列时）；2.5.0 不认 `bfactor` 槽名。
+    - 与 ss_milky/ss_frosted 的"cartoon + 壳"不同：本模板**只**做面，不叠 cartoon。

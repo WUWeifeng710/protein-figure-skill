@@ -1,0 +1,60 @@
+meta:
+  name: ss_frosted_surface
+  title: 二级结构粉彩 cartoon + 同色磨砂玻璃 surface（第二版）
+  scene: cartoon 按二级结构上粉彩，surface 用同色（与 cartoon 呼应）+ 0.60 透，磨砂玻璃质感、色更浓，适合想要色彩饱满的结构图。
+  reference: "用户 .pml 配方沉淀（ss 粉彩 + 同色磨砂壳，原始 recipe_2_ss_frosted.pml 不在本技能内分发）"
+  created: 2026-09-18
+  created_by: 用户沉淀
+
+params:
+  object: "{mol}"
+  cartoon_object: "{mol}_cart"
+  surface_object: "{mol}_surf"
+  custom_colors:
+    soft_blue:  [0.63, 0.75, 0.94]   # ss h
+    rose_pink:  [0.94, 0.69, 0.75]   # ss s
+    lavender:   [0.78, 0.72, 0.84]   # loop
+  ss_color_map:
+    ss_h: soft_blue
+    ss_s: rose_pink
+    loop: lavender
+  hide_water: true
+  hide_hetatm: true
+  # 关键差异：surface 按 ss 同色（不是中性单色）
+  surface_color_by_ss: true
+  surface_transparency: 0.60
+  background: white
+  ambient: 0.5
+  two_sided_lighting: 1
+  ray_trace_mode: 1
+  ray_shadows: 1
+  antialias: 2
+  depth_cue: 0
+  ray_trace_gain: 0.1
+  orthoscopic: 1
+  cartoon_fancy_helices: 1
+  cartoon_smooth_loops: 1
+  cartoon_flat_sheets: 1
+  cartoon_highlight_color: "grey50"
+  save_width: 1600
+  save_ratio: 1.0
+  dpi: 300
+
+render:
+  description: |
+    不走 molpub 类，直接 cmd（见 ss_frosted_surface.py）：
+    1. cmd.load；set_color 三色；白底柔光参数一组
+    2. remove resn HOH；hide everything, hetatm；hide everything
+    3. create cart, m；create surf, m
+    4. show cartoon, cart；cartoon 按 ss 上色（soft_blue=ss h / rose_pink=ss s / lavender=loop）
+    5. show surface, surf；**surface 也按 ss 同色**（磨砂玻璃呼应）：
+       color soft_blue,  surf and ss h
+       color rose_pink,  surf and ss s
+       color lavender,   surf and not (ss h or ss s)
+       set transparency 0.60
+    6. orient cart；ray；png dpi=300
+    7. mol.stop()
+  entry_class: null
+  extra_steps: |
+    - surface 按 ss 同色是本模板与 ss_milky 的核心区别：壳与 cartoon 颜色一致，磨砂玻璃质感，色更浓。
+    - 迁移 2.5.0 时注意 surface 按 ss 选区着色是否生效（ss 选区在 surface 上同样可用）。

@@ -1,0 +1,45 @@
+meta:
+  name: science_publication_layout
+  title: Science 全宽多面板出版排版
+  scene: 多张结构图 / matplotlib 面板 + 文字标注 + 旋转控件，拼成 Science 全宽（3 列）出版级 Figure，适合主图 / 综合图。
+  reference: "PyMOL-PUB cases/case_1.py（Nature 2 列，本模板改 Science 3 列）"
+  created: 2026-09-18
+  created_by: 我自建
+
+params:
+  manuscript_format: Science
+  occupied_columns: 3
+  aspect_ratio: [1, 1.6]
+  mathtext: false
+  grid:
+    row_number: 2
+    column_number: 3
+  # 面板布局：每张图 / 每个面板的 (n_row, n_col, 顺序号)
+  # 调用方按实际要嵌几张图覆写
+  panel_layouts:
+    - {image: "{img_1}", layout: [1, 3, 1]}
+    - {image: "{img_2}", layout: [2, 3, 2]}
+    - {image: "{img_3}", layout: [2, 3, 3]}
+  # 文字标注
+  texts:
+    - {annotation: "(a)", locations: [0.02, 0.97, 0.08, 0.03]}
+    - {annotation: "(b)", locations: [0.35, 0.52, 0.08, 0.03]}
+  # 控件图标（可选）
+  widget_icons:
+    - {type: arrow, params: {degree: 90}, locations: [0.85, 0.8, 0.1, 0.1], transparent: true}
+  dpi: 300
+
+render:
+  description: |
+    1. 先按 nature_highlight / rmsd_compare 等模板生成各子图 PNG（dpi ≥ 300）
+    2. Figure(manuscript_format=Science, occupied_columns=3, aspect_ratio=(1, 1.6),
+              mathtext=False, row_number=2, column_number=3)
+    3. 逐 panel_layouts: fig.set_image(image_path, layout=(r, c, n))
+    4. 逐 texts: fig.set_text(annotation, locations)
+    5. 逐 widget_icons: obtain_widget_icon → fig.set_image(image_path, locations, transparent=True)
+    6. fig.save_figure(save_path)  # dpi 由 Figure.minimum_dpi 决定（Science=300）
+  entry_class: Figure
+  extra_steps: |
+    - set_image 只收 .png；SVG/PDF 控件先栅格化。
+    - locations 与 layout 二选一，不可同时传。
+    - 子图 dpi 必须 ≥ 300，否则 paste_bitmap 抛 ValueError。
