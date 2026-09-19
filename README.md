@@ -64,30 +64,63 @@ variables at the top, not hardcoded.
 
 ## Installation into an AI agent
 
-This skill is a **plain folder** (no build step). To hand it to any agent that
-loads skills (WorkBuddy / Claude / custom harnesses), install it by one of:
+The fastest path: **send this repository URL to your agent and ask it to install
+the skill**. The whole repo *is* the skill — no build step, no pip install of the
+skill itself (the only dependency is PyMOL 2.5.0 + PyMOL-PUB, which the agent sets
+up for you).
+
+### One-step install (recommended)
+
+Paste this prompt into your agent chat (WorkBuddy, Claude, or any harness that can
+clone a repo and read a `SKILL.md`):
+
+```
+Please install the protein-figure skill from
+https://github.com/WUWeifeng710/protein-figure-skill :
+
+1. Clone the repo (shallow) into a folder you manage.
+2. Set up the environment: create a conda env `pymol_pub` with Python 3.11 and
+   conda-forge's `pymol-open-source=2.5.0`, then `pip install PyMOL-PUB` in it.
+   (Skip if an env already has PyMOL 2.5.0 + PyMOL-PUB.)
+3. Run the smoketest to verify:
+   conda run -n pymol_pub python <repo>/smoke_test.py <a PDB I provide>
+4. Confirm which of the 17 templates in <repo>/templates/ you can offer me
+   (nature_highlight / rmsd_compare / science_publication_layout + the
+   14 direct-cmd recipes), and ask me which style + which PDB to start with.
+```
+
+That's it — one message. The agent reads `SKILL.md` (environment rules + 2.5.0
+strict-API pitfalls), `_registry.md` (the style catalog), and the per-recipe
+`.yaml` + `.py` files, and starts rendering.
+
+### What the agent does under the hood
+
+| Step | Action | Where |
+|---|---|---|
+| 1 | `git clone --depth 1 https://github.com/WUWeifeng710/protein-figure-skill` | anywhere |
+| 2 | Create conda env `pymol_pub` (Py 3.11) + `pymol-open-source=2.5.0` + `PyMOL-PUB` | conda |
+| 3 | Run `smoke_test.py` against a real PDB you hand over | repo |
+| 4 | Read `SKILL.md` → `templates/_registry.md` → the recipe `.yaml` you pick | repo |
+| 5 | Render your figure with the chosen recipe's `.py` (parameterized: PDB / chains / residues) | your dir |
+
+### Manual install (if your agent can't clone)
 
 ```bash
-# A) drop into the agent's skills dir
-mkdir -p ~/.workbuddy/skills          # WorkBuddy convention; adapt to your agent
-cp -r <this_dir> ~/.workbuddy/skills/protein-figure
-
-# B) or point your agent at the folder directly
+# drop the repo into your agent's skills dir and tell the agent to read SKILL.md
+git clone --depth 1 https://github.com/WUWeifeng710/protein-figure-skill ~/.workbuddy/skills/protein-figure
 ```
 
-**Prompt to install + use in your agent chat:**
+### Notes
 
-```
-Install the protein-figure skill from <path-or-url>. Then:
-1. Verify PyMOL 2.5.0 + PyMOL-PUB are installed in a conda env (create it if missing).
-2. Run the skill's smoke_test.py against a local PDB I provide.
-3. Use the "goodsell_style" template to render my structure into a journal-cover
-   figure (white bg, 300 DPI, in-figure labels in English).
-4. Save the result to ./output/goodsell_<name>.png.
-```
-
-That prompt is the **whole onboarding** — the agent reads `SKILL.md` for the
-environment rules and the template directory for what each style does.
+- **No `pip install` of the skill** — it's a folder of docs + templates + scripts;
+  the agent just needs to *read* it and *run* the recipe scripts.
+- **The only install step** is PyMOL 2.5.0 + PyMOL-PUB (the conda block above).
+- **Recipes are parameterized** — the agent edits `PDB`, `CHAIN_COLORS`,
+  `KEY_RESIDUES` etc. at the top of the chosen `.py`, then runs it. No code changes
+  to the skill itself.
+- **Version pin matters**: PyMOL must be **exactly 2.5.0** (open source). PyPI's
+  `pymol-open-source` only has 3.x alphas — the agent should use the conda-forge
+  build shown above.
 
 ## What the skill borrows from
 
