@@ -4,8 +4,8 @@ Full skill usage guides (cases + sample figures + install instructions), in two 
 
 | File | Language | Size |
 |---|---|---|
-| `protein_figure_skill_guide_zh.pdf` | 中文 | ~10 MB (15 embedded 1AY7 sample figures) |
-| `protein_figure_skill_guide_en.pdf` | English | ~10 MB (15 embedded 1AY7 sample figures) |
+| `protein_figure_skill_guide_zh.pdf` | 中文 | ~2 MB (15 embedded 1AY7 sample figures) |
+| `protein_figure_skill_guide_en.pdf` | English | ~2 MB (15 embedded 1AY7 sample figures) |
 
 ## Contents (both)
 
