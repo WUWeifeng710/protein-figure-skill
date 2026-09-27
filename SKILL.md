@@ -1,5 +1,5 @@
 ---
-name: protein-figure
+name: protein-figure-skill
 description: >
   Publication-grade 3D protein structure figures. High-level wrapper around PyMOL-PUB (Bioinformatics 2024, btae139):
   journal-spec layouts, structure rendering (highlight / property colouring / alignment), rotation and arrow widget icons,
@@ -438,7 +438,7 @@ Before rendering, verify the "recipe-based render script" item by item to avoid 
 
 ### Verification pace for sedimenting new recipes ("sample figure first, then register")
 A new recipe **must not** be written into `_registry.md` before a verifiable sample figure is produced. Flow:
-1. Write the render script per the recipe → run it on a real PDB (e.g. 1AY7) to produce a sample figure
+1. Write the render script from the recipe → run it on a real PDB (e.g. 1AY7) to produce a sample figure
 2. Verify the sample figure with PIL (exists / size / not blank)
 3. Save the validated script as `templates/<name>.py`
 4. Then write `templates/<name>.yaml` + one row in `_registry.md` + sync SKILL.md
